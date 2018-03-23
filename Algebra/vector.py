@@ -13,7 +13,7 @@ class Vector(object):
                 raise ValueError
             self.coordinates = tuple([Decimal(x) for x in coordinates])
             self.dimension = len(coordinates)
-            self.is_zero = sum([abs(x) for x in coordinates]) == 0
+            self.is_zero = sum([abs(x) for x in coordinates]) < 1e-10
             self.magnitude = self.magnitude()
 
         except ValueError:
@@ -27,6 +27,16 @@ class Vector(object):
     def __eq__(self, v):
         return self.coordinates == v.coordinates
 
+    ''' 相减 '''
+
+    def minus(self, v):
+        return Vector([x - y for x, y in zip(self.coordinates, v.coordinates)])
+
+    ''' 相减 '''
+
+    def sum(self, v):
+        return Vector([x + y for x, y in zip(self.coordinates, v.coordinates)])
+
     ''' 计算向量的大小 '''
 
     def magnitude(self):
@@ -37,7 +47,7 @@ class Vector(object):
     def inner_products(self, v):
         return Decimal(sum([x * y for x, y in zip(self.coordinates, v.coordinates)]))
 
-    ''' 向量标准化计算,并输出一个标准化的新向量 '''
+    ''' 向量标准化计算,并输出一个标准化的新向量 ,也叫向量的方向'''
 
     def normalized(self):
         try:
@@ -50,62 +60,76 @@ class Vector(object):
     ''' 计算两个向量的孤度 '''
 
     def radians(self, v):
-        return Decimal(acos(self.inner_products(v) / (self.magnitude * v.magnitude)))
+        return Decimal(acos(round(self.inner_products(v) / (self.magnitude * v.magnitude), 9)))
+
+    ''' direction　计算向量的方向，基于零向量 '''
+
+    def direction(self):
+        return Vector([0 if x == 0 else x / abs(x) for x in self.coordinates])
 
     ''' 计算两个向量的角度 '''
 
     def angle(self, v):
         # 角度计算，使用三角函数中的 π
         degrees_per_radian = Decimal(180. / pi)
-        return self.radians(v) * degrees_per_radian
+        return round(self.radians(v) * degrees_per_radian, 10)
 
+    ''' 计算两个向量是否平行 '''
 
-my_vector1 = Vector([-0.221, 7.437])
-my_vector2 = Vector([8.813, -1.331, -6.247])
-my_vector3 = Vector([5.581, -2.136])
-my_vector4 = Vector([1.996, 3.108, -4.554])
+    def is_parallel_to(self, v):
+        return self.is_zero or v.is_zero or self.angle(v) == 0 or self.angle(v) == 180
 
-my_vector5 = Vector([1, 2, -1])
-my_vector6 = Vector([3, 1, 0])
+    ''' 
+    计算两个向量是否正交 最终，要注意小数位数　1e-10代表小数点后10位，
+    加入这个判断，只要绝对值小于0.0000000001即代表0
+    '''
 
-print my_vector5.inner_products(my_vector6)
+    def is_orthogonal_to(self, v, tolerance=1e-10):
+        return abs(self.inner_products(v)) < tolerance
 
-print '\n\n练习一 加减乘法　--------------------------------------\n\n'
+    ''' 分量平行 计算self向量 在 v向量上的投影向量 即self平行向量 '''
 
-print '\n\n练习二 大小和方向--------------------------------------\n\n'
+    def component_products_to(self, v):
+        if v.is_zero:
+            raise Exception(self.ERROR_MSG_ZERO_VECTOR)
+        v_normalized = v.normalized()
+        product = self.inner_products(v_normalized)
+        return Vector([x * product for x in v_normalized.coordinates])
 
-print my_vector1.magnitude
-print my_vector2.magnitude
-print my_vector3.normalized()
-print my_vector4.normalized()
-print '\n\n练习二 点积和夹角--------------------------------------\n\n'
+    ''' 分量正交 self垂直 '''
 
-my_vector2_v = Vector([7.887, 4.138])
-my_vector2_w = Vector([-8.802, 6.776])
-my_vector2_v1 = Vector([-5.955, -4.904, -1.874])
-my_vector2_w1 = Vector([-4.496, -8.755, 7.103])
+    def component_orthongonal_to(self, v):
+        product = self.component_products_to(v)
+        return self.minus(product)
 
-print my_vector2_v.inner_products(my_vector2_w)
-print my_vector2_v1.inner_products(my_vector2_w1)
+    ''' 下面公式也可以作用于2维空间，只是Z轴坐标默认为0即可 '''
 
-my_vector2_v2 = Vector([3.183, -7.627])
-my_vector2_w2 = Vector([-2.668, 5.319])
-my_vector2_v3 = Vector([7.35, 0.221, 5.188])
-my_vector2_w3 = Vector([2.751, 8.259, 3.985])
+    ''' 计算向量积  '''
 
-print my_vector2_v2.radians(my_vector2_w2)
-print my_vector2_v3.angle(my_vector2_w3)
+    def cross_product(self, v):
+        ''' 因为数组是元组类型，所以不能这样操作,要处理必须产生新的对像 '''
+        # if self.coordinates.dimension == 2:
+        #     self.coordinates.append(0)
+        # if v.coordinates.dimension == 2:
+        #     v.coordinates.append(0)
 
-print '\n\n练习三 平行　或　　正交--------------------------------------\n\n'
+        x_1, y_1, z_1 = self.coordinates
+        x_2, y_2, z_2 = v.coordinates
 
-my_vector3_v = Vector([-7.579, -7.88])
-my_vector3_w = Vector([22.737, 23.64])
+        return Vector([y_1 * z_2 - y_2 * z_1,
+                       -(x_1 * z_2 - x_2 * z_1),
+                       x_1 * y_2 - x_2 * y_1
+                       ])
 
-my_vector3_v1 = Vector([-2.029, -9.97, 4.172])
-my_vector3_w1 = Vector([-9.231, -6.639, -7.245])
+    ''' 计算向量形成的平行四边形的面积 '''
 
-my_vector3_v2 = Vector([-2.328, -7.284, -1.214])
-my_vector3_w2 = Vector([-1.821, 1.072, -2.94])
+    def area_of_parallelogram(self, v):
+        product_vector = self.cross_product(v)
+        return sqrt(product_vector.coordinates[0] ** 2 +
+                    product_vector.coordinates[1] ** 2 +
+                    product_vector.coordinates[2] ** 2)
 
-my_vector3_v3 = Vector([2.118, 4.827])
-my_vector3_w3 = Vector([0, 0])
+        ''' 向量形成的三角形的面积  即平行四边形的面积的一半 '''
+
+    def area_of_triangle(self, v):
+        return self.area_of_parallelogram(v) / 2
