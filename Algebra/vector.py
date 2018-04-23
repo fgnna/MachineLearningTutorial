@@ -13,7 +13,7 @@ class Vector(object):
                 raise ValueError
             self.coordinates = tuple([Decimal(x) for x in coordinates])
             self.dimension = len(coordinates)
-            self.is_zero = sum([abs(x) for x in coordinates]) < 1e-10
+            self.is_zero = sum([abs(x) for x in self.coordinates]) < 1e-10
             self.magnitude = self.magnitude()
 
         except ValueError:
@@ -26,6 +26,9 @@ class Vector(object):
 
     def __eq__(self, v):
         return self.coordinates == v.coordinates
+
+    def __getitem__(self, i):
+        return self.coordinates[i]
 
     ''' 相减 '''
 
@@ -129,7 +132,10 @@ class Vector(object):
                     product_vector.coordinates[1] ** 2 +
                     product_vector.coordinates[2] ** 2)
 
-        ''' 向量形成的三角形的面积  即平行四边形的面积的一半 '''
+    ''' 向量形成的三角形的面积  即平行四边形的面积的一半 '''
 
     def area_of_triangle(self, v):
         return self.area_of_parallelogram(v) / 2
+
+    def times_scalar(self, scalar):
+        return Vector([x * scalar for x in self.coordinates])

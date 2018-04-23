@@ -1,5 +1,8 @@
 # -- coding: utf-8 --
-from math import sqrt
+from _decimal import Decimal
+
+from line import Line
+from plane import Plane
 from vector import Vector
 
 my_vector1 = Vector([-0.221, 7.437])
@@ -95,3 +98,39 @@ my_vector_w = Vector([-6.007, 0.124, 5.772])
 
 print(my_vector_v.area_of_triangle(my_vector_w))
 
+print('\n\n练习六 直线函数  -------------------------------------\n\n')
+
+print(my_vector_w[0])
+my_line_1 = Line(Vector([4.046, 2.836]), 1.21)
+my_line_2 = Line(Vector([10.115, 7.09]), 3.025)
+print("是否平行", my_line_1.is_parallel_to(my_line_2))
+print("是否一样", my_line_1.__eq__(my_line_2))
+print("交点", my_line_1.get_intersection(my_line_2))
+
+my_line_1 = Line(Vector([7.204, 3.182]), 8.68)
+my_line_2 = Line(Vector([8.172, 4.114]), 9.883)
+print("是否平行", my_line_1.is_parallel_to(my_line_2))
+print("是否一样", my_line_1.__eq__(my_line_2))
+print("交点", my_line_1.get_intersection(my_line_2))
+
+my_line_1 = Line(Vector([1.182, 5.562]), 6.744)
+my_line_2 = Line(Vector([1.773, 8.343]), 9.525)
+print("是否平行", my_line_1.is_parallel_to(my_line_2))
+print("是否一样", my_line_1.__eq__(my_line_2))
+print("交点", my_line_1.get_intersection(my_line_2))
+
+print('\n\n练习七 三维平面  -------------------------------------\n\n')
+my_plane_1 = Plane(Vector([-0.412, 3.806, 0.728]), -3.46)
+my_plane_2 = Plane(Vector([1.03, -9.515, -1.82]), 8.65)
+print("是否平行", my_plane_1.is_parallel_to(my_plane_2))
+print("是否一样", my_plane_1.__eq__(my_plane_2))
+
+my_plane_1 = Plane(Vector([2.611, 5.528, 0.283]), 4.6)
+my_plane_2 = Plane(Vector([7.715, 8.306, 5.342]), 3.76)
+print("是否平行", my_plane_1.is_parallel_to(my_plane_2))
+print("是否一样", my_plane_1.__eq__(my_plane_2))
+
+my_plane_1 = Plane(Vector([-7.926, 8.625, -7.212]), -7.952)
+my_plane_2 = Plane(Vector([-2.642, 2.875, -2.404]), 2.443)
+print("是否平行", my_plane_1.is_parallel_to(my_plane_2))
+print("是否一样", my_plane_1.__eq__(my_plane_2))
