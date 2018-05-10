@@ -72,6 +72,40 @@ class LinearSystem(object):
     def compute_triangular_form(self):
         system = deepcopy(self)
 
+        def printLinsys(system, i):
+            if len(system) == 2:
+                print("第次冒泡：\n{}\n{}:".format(system[0], system[1]))
+            if len(system) == 3:
+                print("第次冒泡：\n{}\n{}\n{}:".format(system[0], system[1], system[2]))
+            if len(system) == 4:
+                print("第次冒泡：\n{}\n{}\n{}\n{}:".format(system[0], system[1], system[2], system[3]))
+
+        ''' 计算排序控制系数 '''
+
+        def p_size(p: Plane):
+            size = 0
+            if p[0] != 0:
+                size += 100
+            if p[1] != 0:
+                size += 10
+            if p[2] != 0:
+                size += 1
+            return size
+
+        ''' 把方程组排序三角化 '''
+
+        def sequence():
+            for m in range(len(system) - 1, -1, -1):
+                for i in range(m):
+                    if p_size(system[i]) < p_size(system[i + 1]):
+                        system.swap_rows(i, i + 1)
+                printLinsys(system,m)
+
+        sequence()
+        return system
+        pass  # 第二步，首项系数化
+        pass  # 确定解
+
     def __len__(self):
         return len(self.planes)
 
@@ -100,62 +134,110 @@ class MyDecimal(Decimal):
 
 '''测试用例'''
 
-p0 = Plane(normal_vector=Vector(['1', '1', '1']), constant_term='1')
-p1 = Plane(normal_vector=Vector(['0', '1', '0']), constant_term='2')
-p2 = Plane(normal_vector=Vector(['1', '1', '-1']), constant_term='3')
-p3 = Plane(normal_vector=Vector(['1', '0', '-2']), constant_term='2')
+# p0 = Plane(normal_vector=Vector(['1', '1', '1']), constant_term='1')
+# p1 = Plane(normal_vector=Vector(['0', '1', '0']), constant_term='2')
+# p2 = Plane(normal_vector=Vector(['1', '1', '-1']), constant_term='3')
+# p3 = Plane(normal_vector=Vector(['1', '0', '-2']), constant_term='2')
+#
+# s = LinearSystem([p0, p1, p2, p3])
+# s.swap_rows(0, 1)
+# if not (s[0] == p1 and s[1] == p0 and s[2] == p2 and s[3] == p3):
+#     print('test case 1 failed')
+#
+# s.swap_rows(1, 3)
+# if not (s[0] == p1 and s[1] == p3 and s[2] == p2 and s[3] == p0):
+#     print('test case 2 failed')
+#
+# s.swap_rows(3, 1)
+# if not (s[0] == p1 and s[1] == p0 and s[2] == p2 and s[3] == p3):
+#     print('test case 3 failed')
+#
+# s.multiply_coefficient_and_row(1, 0)
+# if not (s[0] == p1 and s[1] == p0 and s[2] == p2 and s[3] == p3):
+#     print('test case 4 failed')
+#
+# s.multiply_coefficient_and_row(-1, 2)
+# if not (s[0] == p1 and
+#         s[1] == p0 and
+#         s[2] == Plane(normal_vector=Vector(['-1', '-1', '1']), constant_term='-3') and
+#         s[3] == p3):
+#     print('test case 5 failed')
+#
+# s.multiply_coefficient_and_row(10, 1)
+# if not (s[0] == p1 and
+#         s[1] == Plane(normal_vector=Vector(['10', '10', '10']), constant_term='10') and
+#         s[2] == Plane(normal_vector=Vector(['-1', '-1', '1']), constant_term='-3') and
+#         s[3] == p3):
+#     print('test case 6 failed')
+#
+# print(s)
+# print("------------------")
+#
+# s.add_multiple_times_row_to_row(0, 0, 1)
+# if not (s[0] == p1 and
+#         s[1] == Plane(normal_vector=Vector(['10', '10', '10']), constant_term='10') and
+#         s[2] == Plane(normal_vector=Vector(['-1', '-1', '1']), constant_term='-3') and
+#         s[3] == p3):
+#     print('test case 7 failed')
+#
+# s.add_multiple_times_row_to_row(1, 0, 1)
+# if not (s[0] == p1 and
+#         s[1] == Plane(normal_vector=Vector(['10', '11', '10']), constant_term='12') and
+#         s[2] == Plane(normal_vector=Vector(['-1', '-1', '1']), constant_term='-3') and
+#         s[3] == p3):
+#     print('test case 8 failed')
+#
+# s.add_multiple_times_row_to_row(-1, 1, 0)
+# if not (s[0] == Plane(normal_vector=Vector(['-10', '-10', '-10']), constant_term='-10') and
+#         s[1] == Plane(normal_vector=Vector(['10', '11', '10']), constant_term='12') and
+#         s[2] == Plane(normal_vector=Vector(['-1', '-1', '1']), constant_term='-3') and
+#         s[3] == p3):
+#     print('test case 9 failed')
 
-s = LinearSystem([p0, p1, p2, p3])
-s.swap_rows(0, 1)
-if not (s[0] == p1 and s[1] == p0 and s[2] == p2 and s[3] == p3):
+''' 三角形化测试用例 '''
+
+# p1 = Plane(normal_vector=Vector(['0', '1', '1']), constant_term='1')
+# p2 = Plane(normal_vector=Vector(['0', '2', '-1']), constant_term='2')
+# p3 = Plane(normal_vector=Vector(['1', '0', '1']), constant_term='-1')
+# p4 = Plane(normal_vector=Vector(['2', '3', '2']), constant_term='1')
+# s = LinearSystem([p1, p2, p3, p4])
+# t = s.compute_triangular_form()
+
+p1 = Plane(normal_vector=Vector(['1', '1', '1']), constant_term='1')
+p2 = Plane(normal_vector=Vector(['0', '1', '1']), constant_term='2')
+s = LinearSystem([p1, p2])
+t = s.compute_triangular_form()
+if not (t[0] == p1 and
+        t[1] == p2):
     print('test case 1 failed')
 
-s.swap_rows(1, 3)
-if not (s[0] == p1 and s[1] == p3 and s[2] == p2 and s[3] == p0):
+p1 = Plane(normal_vector=Vector(['1', '1', '1']), constant_term='1')
+p2 = Plane(normal_vector=Vector(['1', '1', '1']), constant_term='2')
+s = LinearSystem([p1, p2])
+t = s.compute_triangular_form()
+if not (t[0] == p1 and
+        t[1] == Plane(constant_term='1')):
     print('test case 2 failed')
 
-s.swap_rows(3, 1)
-if not (s[0] == p1 and s[1] == p0 and s[2] == p2 and s[3] == p3):
-    print('test case 3 failed')
-
-s.multiply_coefficient_and_row(1, 0)
-if not (s[0] == p1 and s[1] == p0 and s[2] == p2 and s[3] == p3):
-    print('test case 4 failed')
-
-s.multiply_coefficient_and_row(-1, 2)
-if not (s[0] == p1 and
-        s[1] == p0 and
-        s[2] == Plane(normal_vector=Vector(['-1', '-1', '1']), constant_term='-3') and
-        s[3] == p3):
-    print('test case 5 failed')
-
-s.multiply_coefficient_and_row(10, 1)
-if not (s[0] == p1 and
-        s[1] == Plane(normal_vector=Vector(['10', '10', '10']), constant_term='10') and
-        s[2] == Plane(normal_vector=Vector(['-1', '-1', '1']), constant_term='-3') and
-        s[3] == p3):
-    print('test case 6 failed')
-
-print(s)
-print("------------------")
-
-s.add_multiple_times_row_to_row(0, 0, 1)
-if not (s[0] == p1 and
-        s[1] == Plane(normal_vector=Vector(['10', '10', '10']), constant_term='10') and
-        s[2] == Plane(normal_vector=Vector(['-1', '-1', '1']), constant_term='-3') and
-        s[3] == p3):
-    print('test case 7 failed')
-
-s.add_multiple_times_row_to_row(1, 0, 1)
-if not (s[0] == p1 and
-        s[1] == Plane(normal_vector=Vector(['10', '11', '10']), constant_term='12') and
-        s[2] == Plane(normal_vector=Vector(['-1', '-1', '1']), constant_term='-3') and
-        s[3] == p3):
-    print('test case 8 failed')
-
-s.add_multiple_times_row_to_row(-1, 1, 0)
-if not (s[0] == Plane(normal_vector=Vector(['-10', '-10', '-10']), constant_term='-10') and
-        s[1] == Plane(normal_vector=Vector(['10', '11', '10']), constant_term='12') and
-        s[2] == Plane(normal_vector=Vector(['-1', '-1', '1']), constant_term='-3') and
-        s[3] == p3):
-    print('test case 9 failed')
+# p1 = Plane(normal_vector=Vector(['1', '1', '1']), constant_term='1')
+# p2 = Plane(normal_vector=Vector(['0', '1', '0']), constant_term='2')
+# p3 = Plane(normal_vector=Vector(['1', '1', '-1']), constant_term='3')
+# p4 = Plane(normal_vector=Vector(['1', '0', '-2']), constant_term='2')
+# s = LinearSystem([p1, p2, p3, p4])
+# t = s.compute_triangular_form()
+# if not (t[0] == p1 and
+#         t[1] == p2 and
+#         t[2] == Plane(normal_vector=Vector(['0', '0', '-2']), constant_term='2') and
+#         t[3] == Plane()):
+#     print('test case 3 failed')
+#
+# p1 = Plane(normal_vector=Vector(['0', '1', '1']), constant_term='1')
+# p2 = Plane(normal_vector=Vector(['1', '-1', '1']), constant_term='2')
+# p3 = Plane(normal_vector=Vector(['1', '2', '-5']), constant_term='3')
+# s = LinearSystem([p1, p2, p3])
+# t = s.compute_triangular_form()
+# if not (t[0] == Plane(normal_vector=Vector(['1', '-1', '1']), constant_term='2') and
+#         t[1] == Plane(normal_vector=Vector(['0', '1', '1']), constant_term='1') and
+#         t[2] == Plane(normal_vector=Vector(['0', '0', '-9']), constant_term='-2')):
+#     print('test case 4 failed')
+#
