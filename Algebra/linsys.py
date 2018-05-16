@@ -69,42 +69,92 @@ class LinearSystem(object):
 
         return indices
 
+    def swap_with_row_below_for_nonzero_coefficient_if_able(self, row, col):
+        num_equations = len(self)
+
+        for k in range(row + 1, num_equations):
+            coefficient = MyDecimal(self[k].normal_vector[col])
+            if not coefficient.is_near_zero():
+                self.swap_rows(row, k)
+                return True
+        return False
+
+    def clear_coefficients_below(self, row, col):
+        num_equations = len(self)
+        beta = MyDecimal(self[row].normal_vector[col])
+        for k in range(row + 1, num_equations):
+            n = self[k].normal_vector
+            gamma = n[col]
+            alpha = -gamma / beta
+            self.add_multiple_times_row_to_row(alpha, row, k)
+
     def compute_triangular_form(self):
         system = deepcopy(self)
+        num_equations = len(system)
+        num_variables = system.dimension
+        j = 0
+        for i in range(num_equations):
+            while j < num_variables:
+                c = MyDecimal(system[i].normal_vector[j])
+                if c.is_near_zero():
+                    swap_succeeded = system.swap_with_row_below_for_nonzero_coefficient_if_able(i, j)
+                    if not swap_succeeded:
+                        j += 1
+                        continue
 
-        def printLinsys(system, i):
-            if len(system) == 2:
-                print("第次冒泡：\n{}\n{}:".format(system[0], system[1]))
-            if len(system) == 3:
-                print("第次冒泡：\n{}\n{}\n{}:".format(system[0], system[1], system[2]))
-            if len(system) == 4:
-                print("第次冒泡：\n{}\n{}\n{}\n{}:".format(system[0], system[1], system[2], system[3]))
-
-        ''' 计算排序控制系数 '''
-
-        def p_size(p: Plane):
-            size = 0
-            if p[0] != 0:
-                size += 100
-            if p[1] != 0:
-                size += 10
-            if p[2] != 0:
-                size += 1
-            return size
-
-        ''' 把方程组排序三角化 '''
-
-        def sequence():
-            for m in range(len(system) - 1, -1, -1):
-                for i in range(m):
-                    if p_size(system[i]) < p_size(system[i + 1]):
-                        system.swap_rows(i, i + 1)
-                printLinsys(system,m)
-
-        sequence()
+                system.clear_coefficients_below(i, j)
+                j += 1
+                break
         return system
-        pass  # 第二步，首项系数化
-        pass  # 确定解
+
+    #
+    # def compute_triangular_form1(self):
+    #     system = deepcopy(self)
+    #
+    #     def printLinsys(system, i):
+    #         if len(system) == 2:
+    #             print("第次冒泡：\n{}\n{}:".format(system[0], system[1]))
+    #         if len(system) == 3:
+    #             print("第次冒泡：\n{}\n{}\n{}:".format(system[0], system[1], system[2]))
+    #         if len(system) == 4:
+    #             print("第次冒泡：\n{}\n{}\n{}\n{}:".format(system[0], system[1], system[2], system[3]))
+    #
+    #     ''' 计算排序控制系数 '''
+    #
+    #     def p_size(p: Plane):
+    #         size = 0
+    #         if p[0] != 0:
+    #             size += 100
+    #         if p[1] != 0:
+    #             size += 10
+    #         if p[2] != 0:
+    #             size += 1
+    #         return size
+    #
+    #     ''' 把方程组排序三角化 '''
+    #
+    #     def sequence():
+    #         for m in range(len(system) - 1, -1, -1):
+    #             for i in range(m):
+    #                 if p_size(system[i]) < p_size(system[i + 1]):
+    #                     system.swap_rows(i, i + 1)
+    #             printLinsys(system, m)
+    #
+    #     ''' 向下行相加 '''
+    #
+    #     def addSequence():
+    #         for i in range(len(system) - 1):
+    #             one = system[i]
+    #             two = system[i + 1]
+    #             first_index = Plane.first_nonzero_index(two.normal_vector)
+    #             print(one[first_index])
+    #             print(two[first_index])
+    #
+    #         pass
+    #
+    #     sequence()
+    #
+    #     return system
 
     def __len__(self):
         return len(self.planes)
@@ -219,25 +269,24 @@ if not (t[0] == p1 and
         t[1] == Plane(constant_term='1')):
     print('test case 2 failed')
 
-# p1 = Plane(normal_vector=Vector(['1', '1', '1']), constant_term='1')
-# p2 = Plane(normal_vector=Vector(['0', '1', '0']), constant_term='2')
-# p3 = Plane(normal_vector=Vector(['1', '1', '-1']), constant_term='3')
-# p4 = Plane(normal_vector=Vector(['1', '0', '-2']), constant_term='2')
-# s = LinearSystem([p1, p2, p3, p4])
-# t = s.compute_triangular_form()
-# if not (t[0] == p1 and
-#         t[1] == p2 and
-#         t[2] == Plane(normal_vector=Vector(['0', '0', '-2']), constant_term='2') and
-#         t[3] == Plane()):
-#     print('test case 3 failed')
-#
-# p1 = Plane(normal_vector=Vector(['0', '1', '1']), constant_term='1')
-# p2 = Plane(normal_vector=Vector(['1', '-1', '1']), constant_term='2')
-# p3 = Plane(normal_vector=Vector(['1', '2', '-5']), constant_term='3')
-# s = LinearSystem([p1, p2, p3])
-# t = s.compute_triangular_form()
-# if not (t[0] == Plane(normal_vector=Vector(['1', '-1', '1']), constant_term='2') and
-#         t[1] == Plane(normal_vector=Vector(['0', '1', '1']), constant_term='1') and
-#         t[2] == Plane(normal_vector=Vector(['0', '0', '-9']), constant_term='-2')):
-#     print('test case 4 failed')
-#
+p1 = Plane(normal_vector=Vector(['1', '1', '1']), constant_term='1')
+p2 = Plane(normal_vector=Vector(['0', '1', '0']), constant_term='2')
+p3 = Plane(normal_vector=Vector(['1', '1', '-1']), constant_term='3')
+p4 = Plane(normal_vector=Vector(['1', '0', '-2']), constant_term='2')
+s = LinearSystem([p1, p2, p3, p4])
+t = s.compute_triangular_form()
+if not (t[0] == p1 and
+        t[1] == p2 and
+        t[2] == Plane(normal_vector=Vector(['0', '0', '-2']), constant_term='2') and
+        t[3] == Plane()):
+    print('test case 3 failed')
+
+p1 = Plane(normal_vector=Vector(['0', '1', '1']), constant_term='1')
+p2 = Plane(normal_vector=Vector(['1', '-1', '1']), constant_term='2')
+p3 = Plane(normal_vector=Vector(['1', '2', '-5']), constant_term='3')
+s = LinearSystem([p1, p2, p3])
+t = s.compute_triangular_form()
+if not (t[0] == Plane(normal_vector=Vector(['1', '-1', '1']), constant_term='2') and
+        t[1] == Plane(normal_vector=Vector(['0', '1', '1']), constant_term='1') and
+        t[2] == Plane(normal_vector=Vector(['0', '0', '-9']), constant_term='-2')):
+    print('test case 4 failed')

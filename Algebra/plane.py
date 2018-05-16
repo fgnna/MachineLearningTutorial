@@ -14,11 +14,9 @@ class Plane(object):
         if not normal_vector:
             all_zeros = ['0'] * self.dimension
             normal_vector = Vector(all_zeros)
-            print("ifnot")
         self.normal_vector = normal_vector
 
         if not constant_term:
-            print("ifnot")
             constant_term = Decimal('0')
         self.constant_term = Decimal(constant_term)
 
@@ -33,9 +31,7 @@ class Plane(object):
             initial_index = Plane.first_nonzero_index(n)
             initial_coefficient = n[initial_index]
 
-            print(c)
             basepoint_coords[initial_index] = c / initial_coefficient
-            print(basepoint_coords)
             self.basepoint = Vector(basepoint_coords)
 
         except Exception as e:
