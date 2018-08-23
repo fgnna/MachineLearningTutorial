@@ -31,6 +31,14 @@ for i in range(365):
 
 print(d)
 
+n = 3
+m = 4
 
-for i in range(2, 4):
-    print(i)
+for i in range(n):
+    for j in range(m):
+        print("{}:{}".format(i,j))
+s=(1,2)
+print(s)
+print(s[0])
+
+print([1,2,3]+[5])

@@ -3,7 +3,9 @@
 
 
 # 本项目要求矩阵统一使用二维列表表示，如下：
+import fractions
 from copy import deepcopy
+from helper import *
 
 A = [[1, 2, 3],
      [2, 3, 3],
@@ -79,6 +81,8 @@ def matxMultiply(A, B):
 
 # TODO 构造增广矩阵，假设A，b行数相同
 def augmentMatrix(A, b):
+    if shape(A)[0] != shape(b)[0]:
+        raise ValueError()
     return [A[i] + b[i] for i, p in enumerate(A)]
 
 
@@ -113,10 +117,22 @@ def addScaledRow(M, r1, r2, scale):
     M[r1] = [p1 + p2 for p1, p2 in zip(M[r1], M_COPY[r2])]
 
 
-
 # 不要修改这里！
-from helper import *
-A = generateMatrix(3,seed,singular=False)
-b = np.ones(shape=(3,1),dtype=int) # it doesn't matter
-Ab = augmentMatrix(A.tolist(),b.tolist()) # 请确保你的增广矩阵已经写好了
-printInMatrixFormat(Ab,padding=3,truncating=0)
+A = generateMatrix(3, 10, singular=False)
+b = np.ones(shape=(3, 1), dtype=int)  # it doesn't matter
+Ab = augmentMatrix(A.tolist(), b.tolist())  # 请确保你的增广矩阵已经写好了
+
+Ab_shape = shape(Ab)
+
+
+
+
+for i in range(Ab_shape[0]):
+    if(Ab[i][])
+
+    for n in range(i+1,Ab_shape[0]):
+
+
+printInMatrixFormat(Ab, padding=3, truncating=0)
+
+print(fractions.Fraction(2, 4) + 6)
